@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SF New Openings</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
   <header>
@@ -21,9 +22,15 @@
       <button class="filter-btn" data-category="coffee">Coffee Shops</button>
       <button class="filter-btn" data-category="bakery">Bakeries</button>
     </div>
+    <div class="view-toggle" id="viewToggle">
+      <button class="view-btn active" data-view="list">List</button>
+      <button class="view-btn" data-view="map">Map</button>
+    </div>
   </div>
 
   <main id="grid" class="grid"></main>
+
+  <div id="map" class="map" hidden></div>
 
   <p id="empty" class="empty" hidden>No places match your filters.</p>
 
@@ -31,6 +38,7 @@
     <p>Data refreshed weekly. <a href="https://github.com/" target="_blank" rel="noopener">View source</a></p>
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="app.js"></script>
 </body>
 </html>

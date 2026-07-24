@@ -7,31 +7,45 @@
       "neighborhood": "Mission (24th & Utah)",
       "description": "All-day cafe by day, pan-Asian cocktail bar by night, in the former Junior space. Beverage menu leans on pandan and ube flavors with beans from Ritual Coffee Roasters.",
       "openDate": "2026-07-01",
-      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/",
+      "lat": 37.7524,
+      "lng": -122.4091,
+      "website": null
     },
     {
       "name": "Cinderella Bakery & Cafe (Mission)",
       "category": "bakery",
-      "neighborhood": "Mission",
+      "neighborhood": "Mission (24th & Alabama)",
       "description": "Second outpost of the beloved Richmond bakery known for rye bread and Russian honey cake, finally opening after years of delays.",
       "openDate": "2026-07-31",
-      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/",
+      "lat": 37.7526,
+      "lng": -122.4106,
+      "website": "https://cinderellabakery.com",
+      "image": "https://cinderellabakery.com/wp-content/uploads/2017/12/Cinderella_Bakery_309-1.jpg"
     },
     {
       "name": "Saam",
       "category": "restaurant",
-      "neighborhood": "TBD",
-      "description": "Mysterious new Thai concept from a chef behind a Bangkok restaurant ranked among the world's best.",
+      "neighborhood": "SoMa (415 Brannan St)",
+      "description": "Debut US restaurant from Michelin-starred Bangkok chef Thitid \"Ton\" Tassanakajohn (Le Du, Nusara).",
       "openDate": "2026-07-01",
-      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/",
+      "lat": 37.7787,
+      "lng": -122.3958,
+      "website": null
     },
     {
       "name": "Oklava Cafe",
       "category": "coffee",
-      "neighborhood": "Mid-Market (Saluhall)",
+      "neighborhood": "Mid-Market (Saluhall, 945 Market St)",
       "description": "Newest tenant of the Saluhall food hall in mid-Market.",
       "openDate": "2026-07-01",
-      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/",
+      "lat": 37.7828,
+      "lng": -122.4098,
+      "website": "https://www.oklavacafe.com",
+      "image": "https://static.wixstatic.com/media/38d9e1_b0447043b0c14a2e850d0f56bc3ea746~mv2.png"
     },
     {
       "name": "Jollibee",
@@ -39,7 +53,11 @@
       "neighborhood": "934 Market St (near Powell St BART)",
       "description": "Long-awaited Filipino fast-food chain known for fried chicken, burgers, and pies opens its doors.",
       "openDate": "2026-07-31",
-      "source": "https://whatnow.com/san-francisco/restaurants/a-long-awaited-filipino-fast-food-favorite-is-finally-opening-in-san-francisco/"
+      "source": "https://whatnow.com/san-francisco/restaurants/a-long-awaited-filipino-fast-food-favorite-is-finally-opening-in-san-francisco/",
+      "lat": 37.7847,
+      "lng": -122.4079,
+      "website": "https://locations.jollibeefoods.com/usa/ca/san-francisco/934-market-street",
+      "image": "https://a.mktgcdn.com/p/5MzBYVMx3Xn5Pw0vwz4DmnaHqiIke6a7IKXKVzk9hWc/528x352.webp"
     },
     {
       "name": "Red Bay Coffee",
@@ -47,7 +65,11 @@
       "neighborhood": "Ferry Building (Suite 46)",
       "description": "Bay Area-based roaster celebrates its grand opening at the Ferry Building with live music and complimentary tastings of its specialty micro-roasts.",
       "openDate": "2026-07-31",
-      "source": "https://sfstandard.com/2026/06/04/coffee-movement-chinatown-slow-bar/"
+      "source": "https://sfstandard.com/2026/06/04/coffee-movement-chinatown-slow-bar/",
+      "lat": 37.7955,
+      "lng": -122.3937,
+      "website": "https://www.redbaycoffee.com",
+      "image": "https://www.redbaycoffee.com/cdn/shop/files/red-bay-coffee_1024x1024.jpg?v=1752073801"
     }
   ]
 }
