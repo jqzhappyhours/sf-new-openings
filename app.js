@@ -1,7 +1,6 @@
 let allPlaces = [];
 let activeCategory = "all";
 let searchTerm = "";
-let activeView = "list";
 let map = null;
 let markers = [];
 
@@ -10,7 +9,6 @@ const mapEl = document.getElementById("map");
 const emptyMsg = document.getElementById("empty");
 const searchInput = document.getElementById("search");
 const filterButtons = document.querySelectorAll(".filter-btn");
-const viewButtons = document.querySelectorAll(".view-btn");
 const lastUpdatedEl = document.getElementById("lastUpdated");
 
 const CATEGORY_LABELS = {
@@ -24,6 +22,10 @@ const CATEGORY_COLORS = {
   coffee: "#6f4e37",
   bakery: "#b8860b",
 };
+
+function websiteLabel(url) {
+  return url.includes("instagram.com") ? "Instagram" : "Website";
+}
 
 function formatDate(iso) {
   if (!iso) return "";
@@ -77,7 +79,7 @@ function renderList(filtered) {
       <div class="card-bottom">
         <span>${formatDate(p.openDate)}</span>
         <div class="card-links">
-          ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Website →</a>` : ""}
+          ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">${websiteLabel(p.website)} →</a>` : ""}
           ${p.source ? `<a href="${p.source}" target="_blank" rel="noopener">Source →</a>` : ""}
         </div>
       </div>
@@ -116,7 +118,7 @@ function renderMap(filtered) {
       <strong>${p.name}</strong><br>
       <span>${CATEGORY_LABELS[p.category] || p.category} · ${p.neighborhood || ""}</span>
       <p>${p.description || ""}</p>
-      ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Website →</a> ` : ""}
+      ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">${websiteLabel(p.website)} →</a> ` : ""}
       ${p.source ? `<a href="${p.source}" target="_blank" rel="noopener">Source →</a>` : ""}
     `);
     markers.push(marker);
@@ -127,19 +129,13 @@ function renderMap(filtered) {
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
   }
 
-  // Leaflet needs a nudge to size correctly after being unhidden.
-  setTimeout(() => map.invalidateSize(), 0);
 }
 
 function render() {
   const filtered = getFiltered();
   emptyMsg.hidden = filtered.length > 0;
-
-  if (activeView === "map") {
-    renderMap(filtered);
-  } else {
-    renderList(filtered);
-  }
+  renderMap(filtered);
+  renderList(filtered);
 }
 
 filterButtons.forEach((btn) => {
@@ -154,17 +150,6 @@ filterButtons.forEach((btn) => {
 searchInput.addEventListener("input", (e) => {
   searchTerm = e.target.value;
   render();
-});
-
-viewButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    viewButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeView = btn.dataset.view;
-    grid.hidden = activeView !== "list";
-    mapEl.hidden = activeView !== "map";
-    render();
-  });
 });
 
 fetch("data.json")

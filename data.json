@@ -10,7 +10,8 @@
       "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/",
       "lat": 37.7524,
       "lng": -122.4091,
-      "website": null
+      "website": "https://www.instagram.com/straydogsf/",
+      "image": "images/stray-dog.jpg"
     },
     {
       "name": "Cinderella Bakery & Cafe (Mission)",
@@ -33,7 +34,8 @@
       "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/",
       "lat": 37.7787,
       "lng": -122.3958,
-      "website": null
+      "website": "https://www.instagram.com/saam3.sf/",
+      "image": "images/saam.jpg"
     },
     {
       "name": "Oklava Cafe",
