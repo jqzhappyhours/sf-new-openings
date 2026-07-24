@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SF New Openings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>SF New Openings</h1>
+    <p class="subtitle">New restaurants, coffee shops &amp; bakeries in San Francisco</p>
+    <p class="updated" id="lastUpdated"></p>
+  </header>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search by name or neighborhood…">
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-category="all">All</button>
+      <button class="filter-btn" data-category="restaurant">Restaurants</button>
+      <button class="filter-btn" data-category="coffee">Coffee Shops</button>
+      <button class="filter-btn" data-category="bakery">Bakeries</button>
+    </div>
+  </div>
+
+  <main id="grid" class="grid"></main>
+
+  <p id="empty" class="empty" hidden>No places match your filters.</p>
+
+  <footer>
+    <p>Data refreshed weekly. <a href="https://github.com/" target="_blank" rel="noopener">View source</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

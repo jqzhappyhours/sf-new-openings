@@ -1,0 +1,53 @@
+{
+  "lastUpdated": "2026-07-24",
+  "places": [
+    {
+      "name": "Stray Dog",
+      "category": "coffee",
+      "neighborhood": "Mission (24th & Utah)",
+      "description": "All-day cafe by day, pan-Asian cocktail bar by night, in the former Junior space. Beverage menu leans on pandan and ube flavors with beans from Ritual Coffee Roasters.",
+      "openDate": "2026-07-01",
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+    },
+    {
+      "name": "Cinderella Bakery & Cafe (Mission)",
+      "category": "bakery",
+      "neighborhood": "Mission",
+      "description": "Second outpost of the beloved Richmond bakery known for rye bread and Russian honey cake, finally opening after years of delays.",
+      "openDate": "2026-07-31",
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+    },
+    {
+      "name": "Saam",
+      "category": "restaurant",
+      "neighborhood": "TBD",
+      "description": "Mysterious new Thai concept from a chef behind a Bangkok restaurant ranked among the world's best.",
+      "openDate": "2026-07-01",
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+    },
+    {
+      "name": "Oklava Cafe",
+      "category": "coffee",
+      "neighborhood": "Mid-Market (Saluhall)",
+      "description": "Newest tenant of the Saluhall food hall in mid-Market.",
+      "openDate": "2026-07-01",
+      "source": "https://sfstandard.com/2026/06/30/best-new-sf-restaurants-july/"
+    },
+    {
+      "name": "Jollibee",
+      "category": "restaurant",
+      "neighborhood": "934 Market St (near Powell St BART)",
+      "description": "Long-awaited Filipino fast-food chain known for fried chicken, burgers, and pies opens its doors.",
+      "openDate": "2026-07-31",
+      "source": "https://whatnow.com/san-francisco/restaurants/a-long-awaited-filipino-fast-food-favorite-is-finally-opening-in-san-francisco/"
+    },
+    {
+      "name": "Red Bay Coffee",
+      "category": "coffee",
+      "neighborhood": "Ferry Building (Suite 46)",
+      "description": "Bay Area-based roaster celebrates its grand opening at the Ferry Building with live music and complimentary tastings of its specialty micro-roasts.",
+      "openDate": "2026-07-31",
+      "source": "https://sfstandard.com/2026/06/04/coffee-movement-chinatown-slow-bar/"
+    }
+  ]
+}
