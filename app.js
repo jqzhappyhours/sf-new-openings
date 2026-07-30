@@ -152,17 +152,37 @@ searchInput.addEventListener("input", (e) => {
   render();
 });
 
-fetch("data.json")
-  .then((res) => res.json())
-  .then((data) => {
-    allPlaces = data.places || [];
-    if (data.lastUpdated) {
-      lastUpdatedEl.textContent = `Last updated ${formatDate(data.lastUpdated)}`;
+function rowToPlace(row) {
+  return {
+    name: row.name,
+    category: row.category,
+    neighborhood: row.neighborhood,
+    description: row.description,
+    openDate: row.open_date,
+    source: row.source,
+    lat: row.lat,
+    lng: row.lng,
+    website: row.website,
+    image: row.image,
+  };
+}
+
+const db = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+db.from("places")
+  .select("*")
+  .order("open_date", { ascending: false })
+  .then(({ data, error }) => {
+    if (error) throw error;
+    allPlaces = (data || []).map(rowToPlace);
+    const latest = allPlaces.reduce((max, p) => (p.openDate > max ? p.openDate : max), "");
+    if (latest) {
+      lastUpdatedEl.textContent = `Last updated ${formatDate(latest)}`;
     }
     render();
   })
   .catch((err) => {
     emptyMsg.hidden = false;
-    emptyMsg.textContent = "Couldn't load data.json.";
+    emptyMsg.textContent = "Couldn't load places from the database.";
     console.error(err);
   });
