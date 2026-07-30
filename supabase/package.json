@@ -1,0 +1,12 @@
+{
+  "name": "sf-new-openings-supabase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "node migrate.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2",
+    "dotenv": "^16"
+  }
+}
