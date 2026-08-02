@@ -16,6 +16,10 @@ create table if not exists places (
   created_at timestamptz not null default now()
 );
 
+-- Lets migrate.mjs upsert by name instead of wiping the table, so it doesn't
+-- clobber rows added by other means (e.g. the weekly food-press scan).
+create unique index if not exists places_name_idx on places (name);
+
 alter table places enable row level security;
 
 create policy "Public read access"

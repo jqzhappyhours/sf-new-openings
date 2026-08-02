@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-24",
+  "lastUpdated": "2026-08-02",
   "places": [
     {
       "name": "Stray Dog",
@@ -72,6 +72,44 @@
       "lng": -122.3937,
       "website": "https://www.redbaycoffee.com",
       "image": "https://www.redbaycoffee.com/cdn/shop/files/red-bay-coffee_1024x1024.jpg?v=1752073801"
+    },
+    {
+      "name": "Double Black",
+      "category": "coffee",
+      "neighborhood": "Cole Valley (925 Cole St)",
+      "description": "A coffee bar inside Yardsale's flagship outdoor apparel store in Cole Valley, serving espresso drinks, matcha, and pastries.",
+      "openDate": "2026-07-14",
+      "source": "https://www.theinfatuation.com/san-francisco/reviews/double-black",
+      "website": "https://www.instagram.com/doubleblacksf/"
+    },
+    {
+      "name": "Kaiyo Handroll Bar",
+      "category": "restaurant",
+      "neighborhood": "Cow Hollow (1838 Union St)",
+      "description": "A Nikkei handroll bar from the Kaiyo team pairing made-to-order handrolls with Peruvian-Japanese fusion dishes, reviving the original Kaiyo space on Union Street.",
+      "openDate": "2026-08-01",
+      "source": "https://sfstandard.com/2026/07/31/best-new-sf-restaurant-bar-openings-august/",
+      "website": "https://www.kaiyosf.com/handroll-bar"
+    },
+    {
+      "name": "Rize Up Cafe",
+      "category": "bakery",
+      "neighborhood": "SoMa (1160 Howard St)",
+      "description": "The first public cafe from sourdough bakery Rize Up, serving coffee, pastries, and toasts made with their colorful sourdough inside their SoMa production kitchen.",
+      "openDate": "2026-08-01",
+      "source": "https://sfstandard.com/2026/07/31/best-new-sf-restaurant-bar-openings-august/",
+      "website": "https://rizeupsourdough.com/"
+    },
+    {
+      "name": "Kopê House",
+      "category": "coffee",
+      "neighborhood": "Hayes Valley (546 Laguna St)",
+      "description": "Barista-run cafe serving cocktail-inspired coffee drinks (red bean, black cherry, passion fruit chocolate cappuccino) alongside teas and pastries.",
+      "openDate": "2026-07-05",
+      "source": "https://www.theinfatuation.com/san-francisco/reviews/kope-house",
+      "lat": 37.7761845,
+      "lng": -122.4261008,
+      "website": "https://www.kopehouse.com"
     }
   ]
 }

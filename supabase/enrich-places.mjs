@@ -64,9 +64,19 @@ async function uploadPhotos(placeId, photos) {
   const urls = [];
 
   for (const [i, photo] of (photos ?? []).slice(0, 6).entries()) {
-    const mediaRes = await fetch(
-      `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=1200&key=${googleApiKey}`
+    // Ask for the CDN URL as JSON instead of a 302 redirect (skipHttpRedirect)
+    // and fetch that URL directly — some sandboxed environments don't follow
+    // the redirect from the media endpoint.
+    const lookupRes = await fetch(
+      `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=1200&key=${googleApiKey}&skipHttpRedirect=true`
     );
+    if (!lookupRes.ok) {
+      console.warn(`  photo ${i} lookup failed (${lookupRes.status}), skipping`);
+      continue;
+    }
+    const { photoUri } = await lookupRes.json();
+
+    const mediaRes = await fetch(photoUri);
     if (!mediaRes.ok) {
       console.warn(`  photo ${i} fetch failed (${mediaRes.status}), skipping`);
       continue;
