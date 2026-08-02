@@ -63,13 +63,13 @@ function renderList(filtered) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <div class="card-image">
+      <a class="card-image" href="detail.html?id=${p.id}">
         ${
           p.image
             ? `<img src="${p.image}" alt="${p.name}" data-category="${p.category}" loading="lazy" onerror="handleImageError(this)">`
             : `<div class="card-image-placeholder ${p.category}"></div>`
         }
-      </div>
+      </a>
       <div class="card-top">
         <h3>${p.name}</h3>
         <span class="tag ${p.category}">${CATEGORY_LABELS[p.category] || p.category}</span>
@@ -154,6 +154,7 @@ searchInput.addEventListener("input", (e) => {
 
 function rowToPlace(row) {
   return {
+    id: row.id,
     name: row.name,
     category: row.category,
     neighborhood: row.neighborhood,

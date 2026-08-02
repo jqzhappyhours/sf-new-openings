@@ -6,7 +6,8 @@ A tiny static site that tracks newly opened restaurants, coffee shops, and baker
 
 - Listing data lives in a Supabase (hosted Postgres) `places` table instead of a flat file, so it can be updated without a commit-and-deploy cycle. `data.json` is kept as the seed/backup copy and is no longer read by the app.
 - `index.html` / `style.css` / `app.js` render that data as a browsable, filterable, searchable grid. Still no build step for the site itself — `app.js` talks to Supabase directly from the browser using the `supabase-js` client and a public anon key (see `config.js`).
-- `supabase/` holds the database schema and a migration script for loading/refreshing data from `data.json` into the table.
+- Clicking a listing's photo opens `detail.html`, which shows its photos, rating, reviews, top dishes, and a menu link — see "Enriching listings with reviews & photos" below for where that data comes from.
+- `supabase/` holds the database schema and scripts for loading/refreshing data from `data.json` and for enriching listings from Google Places.
 - A weekly scheduled Claude task searches local SF food press (Eater SF, SF Standard, SF Chronicle, etc.) for new openings and writes them to the database (see "Updating data" below).
 
 ## One-time Supabase setup
@@ -26,6 +27,22 @@ npm run migrate
 ```
 
 This clears and reloads the `places` table from `../data.json`. Re-run it any time `data.json` changes and you want the database to match.
+
+## Enriching listings with reviews & photos
+
+The detail page (`detail.html`) shows reviews, a rating, photos, and top dishes for each place. That data isn't part of `data.json` — it's fetched from the **Google Places API (New)** by a server-side script (never from the browser, since that would expose the API key). "Top dishes" aren't available from any public API, so the script asks Claude to pull out commonly-mentioned dishes from the fetched reviews instead.
+
+One-time setup:
+1. Run the `alter table` / storage bucket statements at the bottom of `supabase/schema.sql` in the Supabase SQL editor (creates the new columns and a public `place-photos` storage bucket).
+2. Get a [Google Places API](https://developers.google.com/maps/documentation/places/web-service/overview) key with the Places API (New) enabled, and an [Anthropic API key](https://console.anthropic.com/).
+3. Add `GOOGLE_PLACES_API_KEY` and `ANTHROPIC_API_KEY` to `supabase/.env` (alongside the existing Supabase vars).
+
+Then run:
+```
+cd supabase
+npm run enrich
+```
+This only processes places that haven't been enriched yet (`enriched_at is null`), so it's safe to re-run after adding new listings. To force a re-fetch for a place, set its `enriched_at` back to `null` in the Supabase Table Editor.
 
 ## Running locally
 
