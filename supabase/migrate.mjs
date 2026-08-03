@@ -6,8 +6,10 @@
 //   cp .env.example .env   # fill in SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
 //   npm run migrate
 //
-// Safe to re-run: it clears the table and reinserts, so it stays in sync with
-// whatever is currently in ../data.json.
+// Safe to re-run: it upserts by name (requires the places_name_idx unique
+// index from schema.sql), so it stays additive/non-destructive. Rows added
+// by other means (e.g. the weekly food-press scan) that aren't in
+// ../data.json are left alone, not deleted.
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
@@ -43,16 +45,13 @@ const rows = places.map((p) => ({
   image: p.image ?? null,
 }));
 
-const { error: deleteError } = await supabase.from("places").delete().neq("id", 0);
-if (deleteError) {
-  console.error("Failed to clear existing rows:", deleteError.message);
+const { data, error: upsertError } = await supabase
+  .from("places")
+  .upsert(rows, { onConflict: "name" })
+  .select();
+if (upsertError) {
+  console.error("Failed to upsert rows:", upsertError.message);
   process.exit(1);
 }
 
-const { data, error: insertError } = await supabase.from("places").insert(rows).select();
-if (insertError) {
-  console.error("Failed to insert rows:", insertError.message);
-  process.exit(1);
-}
-
-console.log(`Imported ${data.length} places into Supabase.`);
+console.log(`Upserted ${data.length} places into Supabase.`);

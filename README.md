@@ -26,7 +26,7 @@ cp .env.example .env   # fill in SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
 npm run migrate
 ```
 
-This clears and reloads the `places` table from `../data.json`. Re-run it any time `data.json` changes and you want the database to match.
+This upserts `../data.json` into the `places` table by name (insert if new, update if it already exists) — it won't delete rows that were added some other way (e.g. by the weekly scan below). Re-run it any time `data.json` changes and you want the database to match.
 
 ## Enriching listings with reviews & photos
 
