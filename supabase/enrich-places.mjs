@@ -148,7 +148,7 @@ async function extractTopDishes(placeName, reviews) {
 
 const { data: places, error: fetchError } = await supabase
   .from("places")
-  .select("id, name, neighborhood")
+  .select("id, name, neighborhood, image")
   .is("enriched_at", null);
 
 if (fetchError) {
@@ -188,6 +188,9 @@ for (const place of places) {
         user_rating_count: match.userRatingCount ?? null,
         reviews,
         photos,
+        // Only fill the list-card image if one wasn't already curated
+        // (e.g. by hand in data.json) — don't clobber it on a re-enrich.
+        ...(place.image ? {} : { image: photos[0] ?? null }),
         top_dishes: topDishes,
         enriched_at: new Date().toISOString(),
       })
