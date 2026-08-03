@@ -88,6 +88,22 @@ function renderList(filtered) {
   }
 }
 
+function addLegend() {
+  const legend = L.control({ position: "bottomright" });
+  legend.onAdd = () => {
+    const div = L.DomUtil.create("div", "map-legend");
+    div.innerHTML = Object.entries(CATEGORY_LABELS)
+      .map(
+        ([key, label]) =>
+          `<span class="legend-item"><span class="legend-swatch" style="background:${CATEGORY_COLORS[key]}"></span>${label}</span>`
+      )
+      .join("");
+    L.DomEvent.disableClickPropagation(div);
+    return div;
+  };
+  legend.addTo(map);
+}
+
 function initMap() {
   if (map) return;
   map = L.map(mapEl).setView([37.7699, -122.4269], 13);
@@ -95,6 +111,7 @@ function initMap() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19,
   }).addTo(map);
+  addLegend();
 }
 
 function renderMap(filtered) {
