@@ -42,7 +42,7 @@ Then run:
 cd supabase
 npm run enrich
 ```
-This only processes places that haven't been enriched yet (`enriched_at is null`), so it's safe to re-run after adding new listings. To force a re-fetch for a place, set its `enriched_at` back to `null` in the Supabase Table Editor.
+This only processes places that haven't been enriched yet (`enriched_at is null`), so it's safe to re-run after adding new listings. A place only gets `enriched_at` stamped once it actually has photos or reviews — one with no Google Places match yet, or that came away with nothing usable, stays `null` and gets retried automatically by the next run. To force a re-fetch for an already-enriched place, set its `enriched_at` back to `null` in the Supabase Table Editor.
 
 ## Running locally
 

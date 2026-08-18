@@ -11,9 +11,13 @@
 //   cp .env.example .env   # fill in all four vars
 //   npm run enrich
 //
-// Safe to re-run: only places with enriched_at still null (never
-// successfully enriched) are processed. Delete enriched_at on a row (or run
-// the SQL: update places set enriched_at = null) to force a refresh.
+// Safe to re-run: only places with enriched_at still null are processed.
+// enriched_at is only stamped once a place actually has photos or reviews,
+// so a place that had no Google Places match yet (e.g. a very new opening)
+// or came away empty keeps getting retried by future runs instead of being
+// stuck incomplete forever. Delete enriched_at on a row (or run the SQL:
+// update places set enriched_at = null) to force a refresh of an
+// already-enriched place too.
 
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
@@ -168,8 +172,10 @@ for (const place of places) {
   try {
     const match = await searchGooglePlace(place);
     if (!match) {
-      console.warn("  no Google Places match found, marking as enriched with no data");
-      await supabase.from("places").update({ enriched_at: new Date().toISOString() }).eq("id", place.id);
+      // Leave enriched_at null — a brand-new place may not be indexed by
+      // Google yet, so let the next scan try again instead of skipping it
+      // forever.
+      console.warn("  no Google Places match found, will retry next run");
       continue;
     }
 
@@ -178,6 +184,12 @@ for (const place of places) {
       uploadPhotos(place.id, match.photos),
       extractTopDishes(place.name, reviews),
     ]);
+
+    // If we matched a place but came away with nothing usable (no photos,
+    // no reviews), don't stamp enriched_at — photos can fail to upload
+    // transiently and reviews may just not exist yet, so let the next scan
+    // retry instead of leaving the listing permanently incomplete.
+    const gotUsableData = photos.length > 0 || reviews.length > 0;
 
     const { error: updateError } = await supabase
       .from("places")
@@ -192,14 +204,16 @@ for (const place of places) {
         // (e.g. by hand in data.json) — don't clobber it on a re-enrich.
         ...(place.image ? {} : { image: photos[0] ?? null }),
         top_dishes: topDishes,
-        enriched_at: new Date().toISOString(),
+        ...(gotUsableData ? { enriched_at: new Date().toISOString() } : {}),
       })
       .eq("id", place.id);
 
     if (updateError) {
       console.error(`  failed to save: ${updateError.message}`);
-    } else {
+    } else if (gotUsableData) {
       console.log(`  saved (${photos.length} photos, ${reviews.length} reviews, ${topDishes.length} dishes)`);
+    } else {
+      console.log(`  matched but no photos/reviews yet, will retry next run`);
     }
   } catch (err) {
     console.error(`  error: ${err.message}`);
