@@ -27,10 +27,19 @@ function websiteLabel(url) {
   return url.includes("instagram.com") ? "Instagram" : "Website";
 }
 
+const DATE_FORMAT_OPTIONS = { month: "short", day: "numeric", year: "numeric" };
+
 function formatDate(iso) {
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString("en-US", DATE_FORMAT_OPTIONS);
+}
+
+// created_at/enriched_at are full timestamptz values (already carry an
+// offset), unlike open_date which is a bare date — don't append T00:00:00.
+function formatTimestamp(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-US", DATE_FORMAT_OPTIONS);
 }
 
 function getFiltered() {
@@ -182,6 +191,8 @@ function rowToPlace(row) {
     lng: row.lng,
     website: row.website,
     image: row.image,
+    createdAt: row.created_at,
+    enrichedAt: row.enriched_at,
   };
 }
 
@@ -193,9 +204,15 @@ db.from("places")
   .then(({ data, error }) => {
     if (error) throw error;
     allPlaces = (data || []).map(rowToPlace);
-    const latest = allPlaces.reduce((max, p) => (p.openDate > max ? p.openDate : max), "");
-    if (latest) {
-      lastUpdatedEl.textContent = `Last updated ${formatDate(latest)}`;
+    // "Last updated" reflects when data actually changed in the DB (a place
+    // was added by the weekly scan, or enriched with photos/reviews) — not
+    // openDate, which is the restaurant's own opening date and says nothing
+    // about data freshness.
+    const latestRefresh = allPlaces.reduce((max, p) => {
+      return [p.createdAt, p.enrichedAt].filter(Boolean).reduce((m, d) => (d > m ? d : m), max);
+    }, "");
+    if (latestRefresh) {
+      lastUpdatedEl.textContent = `Last updated ${formatTimestamp(latestRefresh)}`;
     }
     render();
   })

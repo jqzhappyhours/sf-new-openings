@@ -15,6 +15,7 @@ This file is expected to be kept in sync with the codebase — a Claude Code hoo
   - Renders the filterable/searchable card grid (`renderList`) and a Leaflet map with one pin per place that has coordinates (`renderMap`/`initMap`). Each card's photo links to `detail.html?id=<place id>`.
   - Handles category filter buttons and the search box, re-rendering both the grid and map on change.
   - Falls back to a placeholder colored by category if a place has no image or its image fails to load.
+  - Sets the "Last updated" header text from the most recent `created_at`/`enriched_at` across all places (i.e. when a place was actually last added or enriched) — not `openDate`, which is the restaurant's own opening date and doesn't reflect data freshness.
 - **`detail.html`** — Page shell for a single place's detail view. Loads the Supabase JS client, `config.js`, then `detail.js`. Contains a static back link and an empty `#content` container that `detail.js` populates.
 - **`detail.js`** — Client-side logic for the detail page: reads the `id` query param, fetches that one row from the `places` table, maps it via `rowToDetail` (same DB-row shape as `app.js` plus the enrichment columns below), and renders a photo gallery, description, top dishes, a menu link-out (to the place's website, falling back to its Google Maps listing), and a review list with average rating. Shows a "not found" message if the id is missing or the row doesn't exist.
 
