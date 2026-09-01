@@ -178,6 +178,13 @@ for (const place of places) {
       console.warn("  no Google Places match found, will retry next run");
       continue;
     }
+    if (!match.photos?.length || !match.reviews?.length) {
+      // Matched, but Google doesn't have both photos and reviews yet (common
+      // for a brand-new listing) — leave enriched_at null so the next scan
+      // retries instead of permanently settling for partial data.
+      console.warn("  matched but missing photos/reviews, will retry next run");
+      continue;
+    }
 
     const reviews = mapReviews(match.reviews);
     const [photos, topDishes] = await Promise.all([
@@ -185,11 +192,11 @@ for (const place of places) {
       extractTopDishes(place.name, reviews),
     ]);
 
-    // If we matched a place but came away with nothing usable (no photos,
-    // no reviews), don't stamp enriched_at — photos can fail to upload
-    // transiently and reviews may just not exist yet, so let the next scan
-    // retry instead of leaving the listing permanently incomplete.
-    const gotUsableData = photos.length > 0 || reviews.length > 0;
+    // Only stamp enriched_at once photos and reviews both actually made it
+    // into the database — photos can still fail to upload even after a
+    // successful Google match, so re-check the real saved results here
+    // rather than trusting Google's response alone.
+    const gotUsableData = photos.length > 0 && reviews.length > 0;
 
     const { error: updateError } = await supabase
       .from("places")

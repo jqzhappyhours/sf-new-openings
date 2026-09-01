@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-02",
+  "lastUpdated": "2026-08-24",
   "places": [
     {
       "name": "Stray Dog",
@@ -110,6 +110,24 @@
       "lat": 37.7761845,
       "lng": -122.4261008,
       "website": "https://www.kopehouse.com"
+    },
+    {
+      "name": "Le Mils Cafe",
+      "category": "coffee",
+      "neighborhood": "Polk Gulch (1330 Polk St)",
+      "description": "San Francisco's only cafe dedicated to Indian specialty coffee, founded to showcase beans from the owners' family farm in southern India, with pour-overs and South Indian filter coffee.",
+      "openDate": "2026-08-15",
+      "source": "https://www.sfchronicle.com/food/restaurants/article/le-mils-indian-coffee-opening-sf-22345476.php",
+      "website": "https://lemils.com"
+    },
+    {
+      "name": "The Mess Hall",
+      "category": "restaurant",
+      "neighborhood": "Presidio (201 Halleck St, Tunnel Tops)",
+      "description": "Ambitious food hall in a restored 1898 building at the Presidio's Tunnel Tops, housing three restaurant concepts (Breadwinner smashburgers, Dayboat Seafood, and Korean-inspired Boda) plus a cafe, bar, and specialty market.",
+      "openDate": "2026-08-15",
+      "source": "https://sfstandard.com/2026/08/10/mess-hall-presidio-food-open/",
+      "website": "https://presidio.gov/explore/attractions/the-mess-hall"
     }
   ]
 }
