@@ -42,6 +42,7 @@ alter table places add column if not exists user_rating_count int;
 alter table places add column if not exists reviews jsonb;
 alter table places add column if not exists photos text[];
 alter table places add column if not exists top_dishes text[];
+alter table places add column if not exists cuisine text;
 alter table places add column if not exists enriched_at timestamptz;
 
 -- Run this once too: creates the public Storage bucket that
