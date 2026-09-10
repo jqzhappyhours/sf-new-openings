@@ -22,7 +22,43 @@ try:
 except Exception as e:
     raise Exception(f"Failed to create Supabase client: {e}")
 
-PLACE_PHOTO_FIELD_MASK = "places.id,places.rating,places.userRatingCount,places.reviews,places.photos,places.websiteUri,places.googleMapsUri";
+PLACE_FIELD_MASK = (
+    "places.id,places.rating,places.userRatingCount,places.reviews,places.photos,"
+    "places.websiteUri,places.googleMapsUri,places.primaryType,"
+    "places.primaryTypeDisplayName,places.types,places.editorialSummary"
+)
+
+# Google Places (New) type strings that actually name a cuisine, mapped to a
+# display label. Generic types (`restaurant`, `cafe`, `bar`, `bakery`,
+# `fine_dining_restaurant`, ...) are deliberately absent — they're a format,
+# not a cuisine, so those fall through to Claude.
+GOOGLE_CUISINE_LABELS = {
+    "afghani_restaurant": "Afghan", "african_restaurant": "African",
+    "american_restaurant": "American", "asian_restaurant": "Asian",
+    "barbecue_restaurant": "Barbecue", "brazilian_restaurant": "Brazilian",
+    "chinese_restaurant": "Chinese", "french_restaurant": "French",
+    "greek_restaurant": "Greek", "hamburger_restaurant": "Burgers",
+    "indian_restaurant": "Indian", "indonesian_restaurant": "Indonesian",
+    "italian_restaurant": "Italian", "japanese_restaurant": "Japanese",
+    "korean_restaurant": "Korean", "lebanese_restaurant": "Lebanese",
+    "mediterranean_restaurant": "Mediterranean", "mexican_restaurant": "Mexican",
+    "middle_eastern_restaurant": "Middle Eastern", "pizza_restaurant": "Pizza",
+    "ramen_restaurant": "Ramen", "seafood_restaurant": "Seafood",
+    "spanish_restaurant": "Spanish", "steak_house": "Steakhouse",
+    "sushi_restaurant": "Sushi", "thai_restaurant": "Thai",
+    "turkish_restaurant": "Turkish", "vegan_restaurant": "Vegan",
+    "vegetarian_restaurant": "Vegetarian", "vietnamese_restaurant": "Vietnamese",
+}
+
+
+def cuisine_from_google(match: dict):
+    """Return a cuisine label from Google's structured place type, or None."""
+    if match.get("primaryType") in GOOGLE_CUISINE_LABELS:
+        return GOOGLE_CUISINE_LABELS[match["primaryType"]]
+    for t in match.get("types", []):
+        if t in GOOGLE_CUISINE_LABELS:
+            return GOOGLE_CUISINE_LABELS[t]
+    return None
 
 
 def search_google_places(place: dict):
@@ -47,7 +83,7 @@ def search_google_places(place: dict):
     headers = {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': googleApiKey,  # Replace 'API_KEY' with your actual Google Places API key
-        'X-Goog-FieldMask': PLACE_PHOTO_FIELD_MASK
+        'X-Goog-FieldMask': PLACE_FIELD_MASK
     }
     
     # Define the data payload for the POST request
@@ -128,23 +164,36 @@ def map_reviews(reviews: dict) -> dict:
         })
     return mapped_reviews
 
-def extract_top_dishes(place_name: str,reviews: list) -> list:
+def extract_dishes_and_cuisine(place_name: str, description: str, editorial_summary: str, reviews: list) -> dict:
     """
-    Extract top dishes from Google Place reviews using Claude.
-
-    Args:
-        place_name (str): The name of the place.
-        reviews (list): A list of review dictionaries from the Google Places API.
+    Ask Claude for top dishes (from reviews) and a cuisine label (from Google's editorial summary + reviews).
 
     Returns:
-        list: A list of top dishes mentioned in the reviews.
+        dict: {"dishes": list[str], "cuisine": str | None}
     """
-    if len(reviews) == 0:
-        return []
-    review_text =  "\n\n".join(f"Review {i+1} ({review.get('rating') or '?'}★): {review.get('text')}"
-                               for i, review in enumerate(reviews)
+    review_text = "\n\n".join(
+        f"Review {i+1} ({review.get('rating') or '?'}★): {review.get('text')}"
+        for i, review in enumerate(reviews)
     )
-    prompt = f"Here are Google reviews for {place_name}, a San Francisco restaurant/cafe:\n\n{review_text}\n\nBased only on these reviews, list up to 5 specific dishes or menu items that are mentioned positively. Respond with ONLY a JSON array of short strings (e.g. [\"Pad See Ew\", \"Thai Iced Tea\"]) and nothing else. If no specific dishes are mentioned, respond with []."
+    context = "\n\n".join(
+        part
+        for part in [
+            f"Editorial description: {description}" if description else "",
+            f"Google's summary: {editorial_summary}" if editorial_summary else "",
+            f"Google reviews:\n\n{review_text}" if review_text else "",
+        ]
+        if part
+    )
+    if not context:
+        return {"dishes": [], "cuisine": None}
+
+    prompt = (
+        f'Here is information about "{place_name}", a San Francisco restaurant/cafe:\n\n{context}\n\n'
+        'Respond with ONLY a JSON object, nothing else, shaped exactly like:\n'
+        '{"dishes": ["Pad See Ew", "Thai Iced Tea"], "cuisine": "Thai"}\n'
+        '- "dishes": up to 5 specific dishes or menu items mentioned positively in the reviews. Use [] if none are named.\n'
+        '- "cuisine": the single best short cuisine label (e.g. "Thai", "Italian", "New American", "Filipino", "Cafe", "Bakery"). Use null if genuinely unclear.'
+    )
     headers = {
       "content-type": "application/json",
       "x-api-key": anthropicApiKey,
@@ -152,28 +201,33 @@ def extract_top_dishes(place_name: str,reviews: list) -> list:
     }
     data = {
         "model": "claude-sonnet-5",
-        "max_tokens": 200,
+        "max_tokens": 250,
         "messages": [
             {"role": "user", "content": prompt}
         ]
     }
     res = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=data, timeout = 30)
     if not res.ok:
-        print(f"Top dishes extraction failed ({res.status_code}): {res.text}")
-        return []
+        print(f"Dish/cuisine extraction failed ({res.status_code}): {res.text}")
+        return {"dishes": [], "cuisine": None}
     result = res.json()
     content = result.get("content") or [{}]
-    raw = content[0].get("text") or "[]"
+    raw = content[0].get("text") or "{}"
     raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw)
     try:
-        dishes = json.loads(raw)
-        return [d for d in dishes if isinstance(d, str)] if isinstance(dishes, list) else []
+        parsed = json.loads(raw)
+        if not isinstance(parsed, dict):
+            return {"dishes": [], "cuisine": None}
+        dishes = [d for d in parsed.get("dishes", []) if isinstance(d, str)]
+        cuisine_val = parsed.get("cuisine")
+        cuisine = cuisine_val.strip() if isinstance(cuisine_val, str) and cuisine_val.strip() else None
+        return {"dishes": dishes, "cuisine": cuisine}
     except json.JSONDecodeError:
-        print(f"  couldn't parse top-dish response: {raw}")
-        return []
+        print(f"  couldn't parse dish/cuisine response: {raw}")
+        return {"dishes": [], "cuisine": None}
 
 try:
-    response = (supabase.table("places").select("id, name, neighborhood, image").is_("enriched_at", "null").execute())
+    response = (supabase.table("places").select("id, name, neighborhood, description, image, cuisine").is_("enriched_at", "null").execute())
        
 except Exception as e:
     print(f"Failed to load places: {e}")
@@ -202,9 +256,16 @@ for place in places:
             print("  matched but missing photos/reviews, will retry next run")
             continue
         reviews = map_reviews(matched_place.get("reviews"))
+        editorial_summary = (matched_place.get("editorialSummary") or {}).get("text")
         photos = upload_photos(place.get("id"), matched_place.get("photos"))
-        top_dishes = extract_top_dishes(place["name"], reviews)
-    
+        extracted = extract_dishes_and_cuisine(
+            place["name"], place.get("description"), editorial_summary, reviews
+        )
+        top_dishes = extracted["dishes"]
+        # Prefer Google's structured cuisine type; fall back to Claude's read of
+        # the description/summary/reviews for the many places Google only tags
+        # `restaurant`. Left None if neither is confident.
+        cuisine = cuisine_from_google(matched_place) or extracted["cuisine"]
 
         # a flag indicating whether we got usable data
         got_usable_data = len(photos) > 0 and len(reviews) > 0
@@ -219,14 +280,16 @@ for place in places:
          "photos" : photos,
         "top_dishes" : top_dishes,
         }
-    # Only fill the list-card image if one wasn't already curated
-    # (e.g. by hand in data.json) — don't clobber it on a re-enrich.
+    # Only fill the list-card image / cuisine if one wasn't already curated
+    # (e.g. by hand in data.json or corrected in the DB) — don't clobber on a re-enrich.
         if not place.get("image"):
             update_data["image"] = photos[0] if photos else None
+        if not place.get("cuisine"):
+            update_data["cuisine"] = cuisine
         # Update the place in Supabase with the enriched data
         if got_usable_data:
             update_data["enriched_at"] = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-            print(f"  saved ({len(photos)} photos, {len(reviews)} reviews, {len(top_dishes)} dishes)")
+            print(f"  saved ({len(photos)} photos, {len(reviews)} reviews, {len(top_dishes)} dishes, cuisine: {cuisine or '—'})")
         update_response = (supabase.table("places").update(update_data)
                        .eq("id", place["id"]).execute())
     except Exception as e:
