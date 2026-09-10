@@ -83,7 +83,7 @@ function renderList(filtered) {
         <h3>${p.name}</h3>
         <span class="tag ${p.category}">${CATEGORY_LABELS[p.category] || p.category}</span>
       </div>
-      <div class="neighborhood">${p.neighborhood || ""}</div>
+      <div class="cuisine-neighborhood">${[p.cuisine, p.neighborhood].filter(Boolean).join(" · ")}</div>
       <div class="description">${p.description || ""}</div>
       <div class="card-bottom">
         <span>${formatDate(p.openDate)}</span>
@@ -183,6 +183,7 @@ function rowToPlace(row) {
     id: row.id,
     name: row.name,
     category: row.category,
+    cuisine: row.cuisine,
     neighborhood: row.neighborhood,
     description: row.description,
     openDate: row.open_date,
