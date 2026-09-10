@@ -166,8 +166,7 @@ def map_reviews(reviews: dict) -> dict:
 
 def extract_dishes_and_cuisine(place_name: str, description: str, editorial_summary: str, reviews: list) -> dict:
     """
-    Ask Claude for top dishes (from reviews) and a cuisine label (from the
-    data.json description + Google's editorial summary + reviews).
+    Ask Claude for top dishes (from reviews) and a cuisine label (from Google's editorial summary + reviews).
 
     Returns:
         dict: {"dishes": list[str], "cuisine": str | None}
