@@ -240,7 +240,7 @@ h1 {
 .tag.coffee { background: var(--coffee); }
 .tag.bakery { background: var(--bakery); }
 
-.neighborhood {
+.cuisine-neighborhood {
   font-size: 0.85rem;
   color: var(--muted);
 }
