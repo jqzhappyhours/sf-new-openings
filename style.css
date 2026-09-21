@@ -203,7 +203,7 @@ h1 {
 .card-image-placeholder.bakery { background: var(--bakery); }
 
 .card-top,
-.neighborhood,
+.cuisine-neighborhood,
 .description,
 .card-bottom {
   margin-left: 1.1rem;
@@ -241,7 +241,7 @@ h1 {
 .tag.bakery { background: var(--bakery); }
 
 .cuisine-neighborhood {
-  font-size: 0.92rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }
 
