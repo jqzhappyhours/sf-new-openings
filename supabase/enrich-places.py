@@ -14,6 +14,9 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 googleApiKey: str = os.environ.get("GOOGLE_PLACES_API_KEY")
 anthropicApiKey: str = os.environ.get("ANTHROPIC_API_KEY")
+# Only needed for API keys that aren't scoped to a single workspace; omit if
+# your key already works without it.
+anthropicWorkspaceId: str = os.environ.get("ANTHROPIC_WORKSPACE_ID")
 
 
 # Create Supabase client and handle potential exceptions
@@ -199,6 +202,8 @@ def extract_dishes_and_cuisine(place_name: str, description: str, editorial_summ
       "x-api-key": anthropicApiKey,
       "anthropic-version": "2023-06-01",
     }
+    if anthropicWorkspaceId:
+        headers["anthropic-workspace-id"] = anthropicWorkspaceId
     data = {
         "model": "claude-sonnet-5",
         "max_tokens": 250,
